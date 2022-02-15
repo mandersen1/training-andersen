@@ -1,0 +1,62 @@
+---
+title: "Rmarkdown_lesson"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+# Header 1
+
+### Header 3
+
+Write some text here. **This is in bold**
+
+-   this makes a list
+-   so does this
+-   to make a list, you have to have a blank line on top of the list
+-   or put two spaces after the line above it
+
+*For any help with markdown commands, see markdown quick reference under tools tab*
+Citations are also easy to insert, you can also auto-generate a bibliography at the end
+
+## Header 2
+
+1.  numbered list
+2.  numbered list
+3.  can also
+4.  make an
+5.  ordered list
+6.  like this
+
+so even if you forget what number you're on, you can always put a 1.
+
+```{r}
+# hitting the C+ button up to will create this automatically
+# cmd + option + i is the keyboard shortcut
+# or you can type it manually
+
+x <- 3 + 2
+```
+
+Running code: several buttons to use, or control + enter on the keyboard
+play button runs everything in a chunk of code, control+enter runs one line
+
+## Read in Data
+
+```{r}
+bg_chem <- read.csv("../data/BGchem2008data.csv")
+```
+
+
+## Analysis
+
+
+## Plots
+echo=FALSE hides all code in the block in the html
+
+```{r,echo=FALSE}
+plot(bg_chem$CTD_Depth, bg_chem$CTD_Temperature)
+```
+
