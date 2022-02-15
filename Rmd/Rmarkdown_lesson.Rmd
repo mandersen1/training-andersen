@@ -60,3 +60,10 @@ echo=FALSE hides all code in the block in the html
 plot(bg_chem$CTD_Depth, bg_chem$CTD_Temperature)
 ```
 
+### Things I learned about git:
+
+- why it is so important to have version control
+- all about github and creating and editing repositories
+- how easy it is to 'push' and 'pull' files from github to Rstudio and vice versa
+- how to commit versions of markdowns or code 
+
