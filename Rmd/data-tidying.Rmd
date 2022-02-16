@@ -1,0 +1,104 @@
+---
+title: "Data Tidying"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+To add a code block: cmd + option + i (for mac)
+### Insert code chunk for calling packages
+To get a function from a package - package::function, ex: dplyr::filter
+To install a package (so that you can bring it from library) - install.packages("dplyr")
+
+```{r, message = FALSE, warning = FALSE}
+library(dplyr)
+library(tidyr)
+library(readr)
+```
+
+### Read in a dataset from an open source url
+This is beneficial for collaboration bc other people don't have to have the dataset downloaded
+```{r}
+catch_original <- read_csv("https://knb.ecoinformatics.org/knb/d1/mn/v2/object/df35b.302.1")
+```
+read_csv is part of readr and will read in the 'whole' dataset - more complete than read.csv
+
+The pipe (%>%) operator: the output of one argument is the input of the next, think 'and then'. The pipe command has a keyboard shortcut: cmd + shift + m
+
+## Clean Data
+```{r}
+catch_data <- catch_original %>% 
+  select(Region, Year, Chinook, Coho, Pink, Sockeye, Chum)
+  #select(-ALL, -notesRegCode)
+  
+head(catch_data)
+```
+### Change chinook from character to numeric type
+
+```{r}
+catch_clean <- catch_data %>%
+  mutate(Chinook = if_else(Chinook == "I", "1", Chinook)) %>% 
+  mutate(Chinook = as.numeric(Chinook))
+head(catch_clean)
+```
+### Finding spurious characters in Chinook column
+random variable i is assigned to any value that is TRUE for NA. Show the row that contains this problem character
+which returns the indeces where said value (na of is.na) is TRUE
+```{r}
+i <- which(is.na(catch_clean$Chinook))
+catch_original[i, ]
+```
+## Reshaping Data
+wide format to long format
+```{r}
+catch_long <- catch_clean %>% 
+  pivot_longer(cols = -c(Region, Year), names_to = "Species", values_to = "Catch") %>% 
+  rename(catch_thousands = Catch) %>% #rename function
+  mutate(catch = catch_thousands * 1000) %>% #add a column
+  select(-catch_thousands) #deletes new column
+
+head(catch_long)
+```
+
+```{r}
+catch_wide <- catch_long %>% 
+  pivot_wider(names_from = Region, values_from = catch)
+
+head(catch_wide)
+```
+
+## Split-Apply-Combine
+Calculate mean catch by region and create new table
+group_by stores some information (in an attribute) that remains pretty invisible unless you go find it
+select grabs columns
+filter grabs rows
+
+```{r}
+mean_region <- catch_long %>% 
+  filter(Species == "Sockeye") %>% 
+  group_by(Region, Species) %>% 
+  summarise(catch_mean = mean(catch),
+            n = n(),
+            .groups = "drop") #ungroup
+
+head(mean_region)
+```
+
+## Joins
+Here we want to Leftjoin, or merge the right table into the left one (catch_long)
+```{r}
+region_defs <- read.csv("https://knb.ecoinformatics.org/knb/d1/mn/v2/object/df35b.303.1") %>% 
+    select(code, mgmtArea)
+
+head(region_defs)
+```
+
+```{r}
+catch_joined <- left_join(catch_long, region_defs, by = c("Region" = "code"))
+
+head(catch_joined)
+nrow(catch_joined) == nrow(catch_long) # check to make sure you joined it correctly
+```
+
