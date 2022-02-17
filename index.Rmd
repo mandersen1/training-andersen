@@ -11,3 +11,10 @@ knitr::opts_chunk$set(echo = TRUE)
 
 - [Data Tidying](Rmd/data-tidying.html)
 - [Rmarkdown Lesson](Rmd/Rmarkdown_lesson.html)
+
+To include images:
+![](image.path.here)
+
+To plot figures from code, use a code chunk with echo = FALSE
+
+Can build a whole webpage using blogdown package (can have different themes, ex: Hugo)
